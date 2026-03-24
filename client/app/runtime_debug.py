@@ -10,6 +10,8 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from urllib.parse import unquote
 
+from app.versioning import app_meta
+
 _SETUP_LOCK = threading.Lock()
 _SETUP_DONE = False
 _EVENT_LOCK = threading.Lock()
@@ -136,6 +138,7 @@ def tail_log_lines(limit: int = 200) -> list[str]:
 def runtime_summary() -> dict[str, object]:
     log_path = resolve_log_path()
     db_path = resolve_database_path()
+    meta = app_meta()
     return {
         "started_at": _STARTED_AT,
         "database_path": str(db_path),
@@ -143,4 +146,5 @@ def runtime_summary() -> dict[str, object]:
         "log_path": str(log_path),
         "log_exists": log_path.exists(),
         "log_size": (log_path.stat().st_size if log_path.exists() else 0),
+        "app": meta.as_dict(),
     }

@@ -30,6 +30,7 @@ python3 -m PyInstaller \
   --windowed \
   --name kabootar-client \
   --icon build/macos/kabootar.icns \
+  --add-data "../version.properties:." \
   --add-data "frontend/templates:frontend/templates" \
   --add-data "frontend/static:frontend/static" \
   --add-data "alembic:alembic" \

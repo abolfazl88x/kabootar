@@ -52,6 +52,8 @@
   "settings.mode_direct": "Direct",
   "settings.mode_dns": "DNS",
   "settings.sync_interval": "Sync interval (minutes)",
+  "settings.version_label": "Version",
+  "settings.channel_label": "Channel",
   "settings.direct_title": "Direct Mode",
   "settings.direct_sub": "Configure proxies used for Telegram fetches.",
   "settings.add_proxy": "+ Add proxy",

@@ -18,6 +18,7 @@ from app.runtime_debug import record_event, runtime_summary, setup_logging, snap
 from app.service import sync_once
 from app.settings_store import all_settings, apply_sync_cron, get_setting, set_setting
 from app.utils import normalize_tg_s_url, parse_csv
+from app.versioning import app_meta
 
 logger = logging.getLogger("kabootar.web")
 _SYNC_JOBS_LOCK = threading.Lock()
@@ -567,11 +568,12 @@ def _resolve_frontend_dirs() -> tuple[Path, Path]:
 def create_app() -> Flask:
     setup_logging()
     ensure_schema()
+    meta = app_meta()
     template_dir, static_dir = _resolve_frontend_dirs()
     app = Flask(__name__, template_folder=str(template_dir), static_folder=str(static_dir))
     app.config["SECRET_KEY"] = settings.app_secret_key
     started_loop = start_background_sync_loop()
-    record_event("web_app_ready", host=settings.app_host, port=settings.app_port)
+    record_event("web_app_ready", host=settings.app_host, port=settings.app_port, version=meta.version_name, version_code=meta.version_code)
     if started_loop:
         record_event("background_sync_ready", interval_minutes=background_sync_status().get("interval_minutes", 1))
 
@@ -587,11 +589,17 @@ def create_app() -> Flask:
             resp.headers["Cache-Control"] = "public, max-age=86400, immutable"
         elif request.path in {"/", "/settings", "/debug", "/debug/state"}:
             resp.headers["Cache-Control"] = "no-cache"
+        resp.headers["X-Kabootar-Version"] = meta.version_name
+        resp.headers["X-Kabootar-Version-Code"] = str(meta.version_code)
         return resp
+
+    @app.get("/app/meta")
+    def app_meta_json():
+        return jsonify(meta.as_dict())
 
     @app.get("/settings")
     def settings_page():
-        return render_template("settings.html", settings=all_settings(), message=request.args.get("msg", ""))
+        return render_template("settings.html", settings=all_settings(), message=request.args.get("msg", ""), app_meta=meta.as_dict())
 
     @app.get("/debug")
     def debug_page():
@@ -604,6 +612,7 @@ def create_app() -> Flask:
         domain_list = [line for line in (app_settings.get("dns_domains", "") or "").splitlines() if line.strip()]
         resolver_list = [line for line in (app_settings.get("dns_resolvers", "") or "").splitlines() if line.strip()]
         payload = {
+            "app": meta.as_dict(),
             "runtime": runtime_summary(),
             "background_sync": background_sync_status(),
             "settings": {

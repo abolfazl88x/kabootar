@@ -3,23 +3,55 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+val versionProps = java.util.Properties().apply {
+    val versionFile = rootDir.parentFile.parentFile.resolve("version.properties")
+    if (versionFile.isFile) {
+        versionFile.inputStream().use { load(it) }
+    }
+}
+
+val appVersionName = (versionProps.getProperty("version_name") ?: "0.1.1").trim().ifBlank { "0.1.1" }
+val appVersionCode = ((versionProps.getProperty("version_code") ?: "2").trim().toIntOrNull() ?: 2).coerceAtLeast(1)
+
 val startUrlProp = (project.findProperty("startUrl") as String?)?.trim()
 val startUrlEnv = System.getenv("START_URL")?.trim()
 val startUrlDefault = "file:///android_asset/bootstrap.html"
 val startUrlRaw = (startUrlProp ?: startUrlEnv ?: startUrlDefault).ifBlank { startUrlDefault }
 val startUrlEscaped = startUrlRaw.replace("\\", "\\\\").replace("\"", "\\\"")
 
+val releaseKeystoreFile = ((project.findProperty("kabootarKeystoreFile") as String?)?.trim() ?: System.getenv("KABOOTAR_KEYSTORE_FILE")?.trim()).orEmpty()
+val releaseKeystorePassword = ((project.findProperty("kabootarKeystorePassword") as String?)?.trim() ?: System.getenv("KABOOTAR_KEYSTORE_PASSWORD")?.trim()).orEmpty()
+val releaseKeyAlias = ((project.findProperty("kabootarKeyAlias") as String?)?.trim() ?: System.getenv("KABOOTAR_KEY_ALIAS")?.trim()).orEmpty()
+val releaseKeyPassword = ((project.findProperty("kabootarKeyPassword") as String?)?.trim() ?: System.getenv("KABOOTAR_KEY_PASSWORD")?.trim()).orEmpty()
+val hasReleaseSigning = releaseKeystoreFile.isNotBlank() &&
+    releaseKeystorePassword.isNotBlank() &&
+    releaseKeyAlias.isNotBlank() &&
+    releaseKeyPassword.isNotBlank()
+
 android {
     namespace = "com.kabootar.client"
     compileSdk = 35
+
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("kabootarRelease") {
+                storeFile = file(releaseKeystoreFile)
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.kabootar.client"
         minSdk = 21
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
         buildConfigField("String", "START_URL", "\"$startUrlEscaped\"")
+        buildConfigField("String", "APP_VERSION_NAME", "\"${appVersionName.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
+        buildConfigField("int", "APP_VERSION_CODE", appVersionCode.toString())
     }
 
     buildTypes {
@@ -28,9 +60,7 @@ android {
         }
         release {
             isMinifyEnabled = true
-            // CI does not ship a private keystore yet. Use the debug signing
-            // config so the generated universal APK is still installable.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseSigning) signingConfigs.getByName("kabootarRelease") else signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",

@@ -22,6 +22,7 @@ from app.scraper import (
 from app.settings_store import get_setting, set_setting
 from app.text_packer import pack_text
 from app.utils import normalize_tg_s_url, parse_csv
+from app.versioning import app_meta
 
 
 @dataclass
@@ -670,6 +671,7 @@ class BridgeResolver(BaseResolver):
 
 
 def run_dns_bridge_server() -> None:
+    meta = app_meta()
     domain = get_setting("dns_domain", "t.example.com") or "t.example.com"
     port = int(get_setting("dns_port", "5533") or 5533)
     cfg = BridgeConfig(domain=domain, port=port)
@@ -696,6 +698,10 @@ def run_dns_bridge_server() -> None:
     proto = "udp+tcp" if tcp_enabled else "udp"
     fallback_host = (get_setting("dns_fallback_host", "127.0.0.1") or "127.0.0.1").strip() or "127.0.0.1"
     fallback_port = (get_setting("dns_fallback_port", "5300") or "5300").strip() or "5300"
+    print(
+        f"[dns-bridge] {meta.app_name} server {meta.version_name} ({meta.version_code}) "
+        f"channel={meta.release_channel}"
+    )
     print(
         f"[dns-bridge] running {proto} on {cfg.address}:{cfg.port} "
         f"domain={cfg.domain} mode={mode} auth={auth} fallback={fallback_host}:{fallback_port}"

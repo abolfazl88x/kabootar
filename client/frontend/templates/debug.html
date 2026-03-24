@@ -135,6 +135,8 @@
         const data = await res.json();
 
         renderRows(document.getElementById('runtimePanel'), [
+          ['Version', data.app?.display_version],
+          ['Release Channel', data.app?.release_channel],
           ['Started', fmtTime(data.runtime?.started_at)],
           ['DB', data.runtime?.database_path],
           ['Log', data.runtime?.log_path],

@@ -25,6 +25,15 @@
       </div>
     </header>
 
+    <section class="settings-version-card" aria-label="Application version">
+      <div class="settings-version-kicker" data-i18n="settings.version_label">Version</div>
+      <div class="settings-version-value">{{ app_meta.display_version }}</div>
+      <div class="settings-version-meta">
+        <span data-i18n="settings.channel_label">Channel</span>
+        <strong>{{ app_meta.release_channel }}</strong>
+      </div>
+    </section>
+
     <form method="post" class="settings-form" novalidate id="settingsForm">
       {% if message %}<div class="msg">{{ message }}</div>{% endif %}
 

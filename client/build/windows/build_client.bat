@@ -42,6 +42,7 @@ if errorlevel 1 exit /b 1
   --windowed ^
   --name kabootar-client ^
   --icon "build\windows\kabootar.ico" ^
+  --add-data "..\version.properties;." ^
   --add-data "frontend\templates;frontend\templates" ^
   --add-data "frontend\static;frontend\static" ^
   --add-data "alembic;alembic" ^

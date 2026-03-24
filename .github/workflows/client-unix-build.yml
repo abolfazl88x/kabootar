@@ -4,10 +4,12 @@ on:
   push:
     paths:
       - "client/**"
+      - "version.properties"
       - ".github/workflows/client-unix-build.yml"
   pull_request:
     paths:
       - "client/**"
+      - "version.properties"
       - ".github/workflows/client-unix-build.yml"
   release:
     types: [published]
@@ -91,6 +93,7 @@ jobs:
             --onefile \
             --windowed \
             --name kabootar-client \
+            --add-data "../version.properties:." \
             --add-data "frontend/templates:frontend/templates" \
             --add-data "frontend/static:frontend/static" \
             --add-data "alembic:alembic" \
@@ -112,6 +115,7 @@ jobs:
             --windowed \
             --name kabootar-client \
             --icon build/macos/kabootar.icns \
+            --add-data "../version.properties:." \
             --add-data "frontend/templates:frontend/templates" \
             --add-data "frontend/static:frontend/static" \
             --add-data "alembic:alembic" \

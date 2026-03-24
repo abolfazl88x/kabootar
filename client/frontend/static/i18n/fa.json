@@ -52,6 +52,8 @@
   "settings.mode_direct": "دایرکت",
   "settings.mode_dns": "DNS",
   "settings.sync_interval": "فاصله سینک (دقیقه)",
+  "settings.version_label": "ورژن",
+  "settings.channel_label": "کانال انتشار",
   "settings.direct_title": "حالت Direct",
   "settings.direct_sub": "پروکسی‌های دریافت از تلگرام را تنظیم کنید.",
   "settings.add_proxy": "+ افزودن پروکسی",

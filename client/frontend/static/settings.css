@@ -91,6 +91,39 @@
   gap:12px;
 }
 
+.settings-version-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:12px;
+  padding:12px 14px;
+  border:1px solid rgba(46,167,255,.28);
+  border-radius:14px;
+  background:linear-gradient(180deg,rgba(15,35,51,.92),rgba(9,25,37,.92));
+}
+
+.settings-version-kicker{
+  color:var(--settings-muted);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.settings-version-value{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+
+.settings-version-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--settings-muted);
+  font-size:12px;
+}
+
 .settings-grid{
   display:grid;
   grid-template-columns:1fr;
@@ -424,6 +457,10 @@
   .settings-header{
     flex-direction:column;
     align-items:stretch;
+  }
+  .settings-version-card{
+    flex-direction:column;
+    align-items:flex-start;
   }
   .settings-header-actions{
     justify-content:flex-start;
