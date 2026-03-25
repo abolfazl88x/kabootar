@@ -143,7 +143,8 @@ configure<ChaquopyExtension> {
         version = "3.13"
         buildPython(*buildPythonCommand.toTypedArray())
         pip {
-            install("feedparser==6.0.10 --no-deps")
+            install("feedparser==6.0.10")
+            install("sgmllib3k==1.0.0")
             install("Flask==3.0.3")
             install("SQLAlchemy==2.0.36")
             install("python-dotenv==1.0.1")
