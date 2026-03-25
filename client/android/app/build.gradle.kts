@@ -148,7 +148,7 @@ configure<ChaquopyExtension> {
             install("python-dotenv==1.0.1")
             install("requests==2.32.3")
             install("PySocks==1.7.1")
-            install("feedparser==5.2.1")
+            install("feedparser==6.0.11")
             install("dnslib==0.9.25")
             install("dnspython==2.6.1")
         }
